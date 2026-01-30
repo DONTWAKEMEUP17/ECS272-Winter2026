@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { isEmpty, debounce } from 'lodash'
 import { ComponentSize, Margin } from '../types'
 
@@ -74,137 +74,81 @@ function initChart() {
 
     if (!canRender.value || !stats.value) return
 
-    const sparklineWidth = (size.value.width - 40) / 2
-    const sparklineHeight = 60
-
-    // Sparkline 1: Track Popularity Distribution
-    drawSparkline(
-        svg,
-        data.value.map(d => d.track_popularity),
-        20,
-        20,
-        sparklineWidth,
-        sparklineHeight,
-        'Track Popularity Distribution',
-        '#3498DB'
-    )
-
-    // Sparkline 2: Artist Popularity Distribution
-    drawSparkline(
-        svg,
-        data.value.map(d => d.artist_popularity),
-        sparklineWidth + 40,
-        20,
-        sparklineWidth,
-        sparklineHeight,
-        'Artist Popularity Distribution',
-        '#E74C3C'
-    )
-
-    // Summary Stats
-    const statsY = 100
-    const statsX = 20
-    const lineHeight = 28
+    // Button group settings
+    const buttonWidth = 140
+    const buttonHeight = 70
+    const padding = 15
+    const buttonSpacing = 10
+    const startX = 30
+    const startY = 30
 
     // Title
     svg.append('text')
-        .attr('x', statsX)
-        .attr('y', statsY)
+        .attr('x', startX)
+        .attr('y', startY - 15)
         .attr('class', 'stats-title')
         .style('font-size', '16px')
         .style('font-weight', 'bold')
         .text('Dataset Summary')
 
-    // Stats
-    svg.append('text')
-        .attr('x', statsX)
-        .attr('y', statsY + lineHeight)
-        .style('font-size', '12px')
-        .text(`Total Tracks: ${stats.value.totalTracks}`)
+    // Create button group data
+    const buttons = [
+        { label: 'Total Tracks', value: stats.value.totalTracks, color: '#3498DB' },
+        { label: 'Avg Track Pop', value: stats.value.avgTrackPopularity, color: '#E74C3C' },
+        { label: 'Track Range', value: `${stats.value.minTrackPopularity}-${stats.value.maxTrackPopularity}`, color: '#F39C12' },
+        { label: 'Avg Artist Pop', value: stats.value.avgArtistPopularity, color: '#27AE60' },
+        { 
+            label: 'Correlation', 
+            value: stats.value.correlation, 
+            color: stats.value.correlation > 0.3 ? '#27AE60' : '#E67E22'
+        }
+    ]
 
-    svg.append('text')
-        .attr('x', statsX)
-        .attr('y', statsY + lineHeight * 2)
-        .style('font-size', '12px')
-        .text(`Avg Track Popularity: ${stats.value.avgTrackPopularity}`)
+    // Draw buttons in a grid
+    let currentX = startX
+    let currentY = startY
+    let buttonsPerRow = 3
 
-    svg.append('text')
-        .attr('x', statsX)
-        .attr('y', statsY + lineHeight * 3)
-        .style('font-size', '12px')
-        .text(`Track Range: ${stats.value.minTrackPopularity} - ${stats.value.maxTrackPopularity}`)
+    buttons.forEach((btn, index) => {
+        if (index > 0 && index % buttonsPerRow === 0) {
+            currentX = startX
+            currentY += buttonHeight + buttonSpacing + 30
+        }
 
-    svg.append('text')
-        .attr('x', statsX)
-        .attr('y', statsY + lineHeight * 4)
-        .style('font-size', '12px')
-        .text(`Avg Artist Popularity: ${stats.value.avgArtistPopularity}`)
+        // Button background
+        svg.append('rect')
+            .attr('x', currentX)
+            .attr('y', currentY)
+            .attr('width', buttonWidth)
+            .attr('height', buttonHeight)
+            .attr('fill', btn.color)
+            .attr('opacity', 0.15)
+            .attr('stroke', btn.color)
+            .attr('stroke-width', 2)
+            .attr('rx', 5)
 
-    svg.append('text')
-        .attr('x', statsX)
-        .attr('y', statsY + lineHeight * 5)
-        .style('font-size', '12px')
-        .style('font-weight', 'bold')
-        .style('fill', stats.value.correlation > 0.3 ? '#27AE60' : '#E67E22')
-        .text(`Correlation: ${stats.value.correlation} ${stats.value.correlation > 0.3 ? '↑' : '→'}`)
-}
+        // Button label
+        svg.append('text')
+            .attr('x', currentX + buttonWidth / 2)
+            .attr('y', currentY + 20)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '11px')
+            .style('font-weight', 'bold')
+            .style('fill', btn.color)
+            .text(btn.label)
 
-function drawSparkline(
-    svg: any,
-    values: number[],
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    label: string,
-    color: string
-) {
-    // Sort values for distribution visualization
-    const sortedValues = [...values].sort((a, b) => a - b)
-    
-    const xScale = d3.scaleLinear()
-        .domain([0, sortedValues.length - 1])
-        .range([0, width])
+        // Button value
+        svg.append('text')
+            .attr('x', currentX + buttonWidth / 2)
+            .attr('y', currentY + 50)
+            .attr('text-anchor', 'middle')
+            .style('font-size', '14px')
+            .style('font-weight', 'bold')
+            .style('fill', btn.color)
+            .text(String(btn.value))
 
-    const yScale = d3.scaleLinear()
-        .domain([Math.min(...sortedValues), Math.max(...sortedValues)])
-        .range([height, 0])
-
-    const line = d3.line<number>()
-        .x((d, i) => xScale(i))
-        .y(d => yScale(d))
-
-    // Draw label
-    svg.append('text')
-        .attr('x', x)
-        .attr('y', y - 5)
-        .style('font-size', '11px')
-        .style('font-weight', 'bold')
-        .text(label)
-
-    // Create group for sparkline
-    const g = svg.append('g')
-        .attr('transform', `translate(${x}, ${y})`)
-
-    // Draw line
-    g.append('path')
-        .datum(sortedValues)
-        .attr('d', line)
-        .attr('stroke', color)
-        .attr('stroke-width', 1.5)
-        .attr('fill', 'none')
-
-    // Draw area under line
-    const area = d3.area<number>()
-        .x((d, i) => xScale(i))
-        .y0(height)
-        .y1(d => yScale(d))
-
-    g.append('path')
-        .datum(sortedValues)
-        .attr('d', area)
-        .attr('fill', color)
-        .attr('opacity', 0.1)
+        currentX += buttonWidth + buttonSpacing
+    })
 }
 
 const debouncedResize = debounce(onResize, 200)
@@ -234,7 +178,6 @@ onBeforeUnmount(() => {
 })
 
 // Watch for changes to data or size to re-render
-import { watch } from 'vue'
 watch([data, size], () => {
     if (canRender.value) {
         initChart()
