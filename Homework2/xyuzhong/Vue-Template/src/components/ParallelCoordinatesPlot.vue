@@ -112,7 +112,7 @@ function initChart() {
         .style('font-size', '14px')
         .style('font-weight', 'bold')
         .style('fill', '#1DB954')
-        .text('Parallel Coordinates Plot')
+        .text('Multi-Dimensional Track Analysis (4 Dimensions)')
 
     // Add axes
     dimensions.forEach((dim) => {
