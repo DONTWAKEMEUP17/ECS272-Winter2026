@@ -97,11 +97,13 @@ function initChart() {
     // Title
     chartContainer
         .append('text')
-        .attr('transform', `translate(${size.value.width / 2}, ${margin.top - 10})`)
-        .style('text-anchor', 'middle')
-        .style('font-size', '16px')
+        .attr('x', size.value.width / 2)
+        .attr('y', margin.top - 10)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '14px')
         .style('font-weight', 'bold')
-        .text('Focus: Track Duration vs Popularity (Bubble Size = Artist Followers)')
+        .style('fill', '#1DB954')
+        .text('Track Duration vs Popularity (Bubble Size = Artist Followers)')
 
     // Bubbles
     chartContainer
@@ -112,9 +114,9 @@ function initChart() {
         .attr('cx', d => xScale(d.track_duration_ms / 1000 / 60))
         .attr('cy', d => yScale(d.track_popularity))
         .attr('r', d => radiusScale(d.artist_followers))
-        .attr('fill', d => d.explicit ? '#E74C3C' : '#3498DB')
+        .attr('fill', d => d.explicit ? '#FF6B6B' : '#1DB954')
         .attr('opacity', 0.5)
-        .attr('stroke', '#333')
+        .attr('stroke', '#282828')
         .attr('stroke-width', 0.5)
 
     // Legend for bubble sizes
@@ -140,9 +142,9 @@ function initChart() {
             .attr('cx', legendX + r + 5)
             .attr('cy', baseY)
             .attr('r', r)
-            .attr('fill', '#3498DB')
+            .attr('fill', '#1DB954')
             .attr('opacity', 0.5)
-            .attr('stroke', '#333')
+            .attr('stroke', '#282828')
             .attr('stroke-width', 0.5)
 
         chartContainer
@@ -150,6 +152,7 @@ function initChart() {
             .attr('x', legendX + r * 2 + 15)
             .attr('y', baseY + 4)
             .style('font-size', '11px')
+            .style('fill', '#b3b3b3')
             .text(labels[i])
     })
 
@@ -163,6 +166,7 @@ function initChart() {
         .attr('y', explicitLegendY - 10)
         .style('font-size', '12px')
         .style('font-weight', 'bold')
+        .style('fill', '#1DB954')
         .text('Explicit Content:')
 
     chartContainer
@@ -170,9 +174,9 @@ function initChart() {
         .attr('cx', explicitLegendX + 10)
         .attr('cy', explicitLegendY + 15)
         .attr('r', 4)
-        .attr('fill', '#E74C3C')
+        .attr('fill', '#FF6B6B')
         .attr('opacity', 0.5)
-        .attr('stroke', '#333')
+        .attr('stroke', '#282828')
         .attr('stroke-width', 0.5)
 
     chartContainer
@@ -180,6 +184,7 @@ function initChart() {
         .attr('x', explicitLegendX + 25)
         .attr('y', explicitLegendY + 19)
         .style('font-size', '11px')
+        .style('fill', '#b3b3b3')
         .text('Explicit')
 
     chartContainer
@@ -187,9 +192,9 @@ function initChart() {
         .attr('cx', explicitLegendX + 10)
         .attr('cy', explicitLegendY + 35)
         .attr('r', 4)
-        .attr('fill', '#3498DB')
+        .attr('fill', '#1DB954')
         .attr('opacity', 0.5)
-        .attr('stroke', '#333')
+        .attr('stroke', '#282828')
         .attr('stroke-width', 0.5)
 
     chartContainer
@@ -197,6 +202,7 @@ function initChart() {
         .attr('x', explicitLegendX + 25)
         .attr('y', explicitLegendY + 39)
         .style('font-size', '11px')
+        .style('fill', '#b3b3b3')
         .text('Clean')
 }
 
@@ -224,7 +230,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="chart-container d-flex" ref="container">
+    <div class="chart-container d-flex" ref="container" style="background: #191414;">
         <svg id="bubble-chart-svg" width="100%" height="100%"></svg>
     </div>
 </template>
@@ -233,5 +239,6 @@ onBeforeUnmount(() => {
 .chart-container {
     width: 100%;
     height: 100%;
+    background: #191414;
 }
 </style>

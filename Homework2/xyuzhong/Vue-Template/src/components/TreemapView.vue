@@ -59,10 +59,10 @@ function prepareTreemapData() {
         popularity: (tracks.reduce((sum: number, t: any) => sum + t.track_popularity, 0) / tracks.length)
     }))
 
-    // Sort by track count and take top 25 artists
+    // Sort by track count and take top 40 artists
     children = children
         .sort((a, b) => b.value - a.value)
-        .slice(0, 25)
+        .slice(0, 40)
 
     return {
         name: 'root',
@@ -84,6 +84,7 @@ function initChart() {
         .attr('y', 20)
         .style('font-size', '14px')
         .style('font-weight', 'bold')
+        .style('fill', '#1DB954')
         .text('Artist Tracks & Popularity (Treemap)')
 
     const chartWidth = size.value.width
@@ -107,10 +108,10 @@ function initChart() {
 
     const treemapRoot = treemap(root) as TreeHierarchy
 
-    // Color scale based on popularity
+    // Color scale based on popularity (Spotify green gradient)
     const colorScale = d3.scaleLinear<string>()
         .domain([0, 100])
-        .range(['#D7191C', '#ABD9E9']) // Red to light blue (diverging)
+        .range(['#191414', '#1DB954']) // Black to Spotify green
 
     // Create cells
     const cells = svg.selectAll('g')
@@ -191,15 +192,81 @@ function initChart() {
             .attr('stroke-width', 2)
     })
 
-    // Add legend
-    const legendX = 10
-    const legendY = chartHeight + margin.top + 5
+    // Add legend at the bottom
+    const legendX = 20
+    const legendY = chartHeight - 50
+    const legendHeight = 70
 
-    svg.append('text')
+    // Legend background
+    svg.append('rect')
         .attr('x', legendX)
+        .attr('y', legendY)
+        .attr('width', 320)
+        .attr('height', legendHeight)
+        .attr('fill', '#282828')
+        .attr('opacity', 0.85)
+        .attr('stroke', '#1DB954')
+        .attr('stroke-width', 1)
+
+    // First row: Color legend
+    svg.append('text')
+        .attr('x', legendX + 10)
         .attr('y', legendY + 15)
         .style('font-size', '10px')
-        .text('Color: Artist Avg Popularity (Red=Low, Blue=High) | Size: Number of Tracks')
+        .style('font-weight', 'bold')
+        .style('fill', '#1DB954')
+        .text('Color: Artist Avg Popularity')
+
+    // Legend color bar
+    svg.append('rect')
+        .attr('x', legendX + 220)
+        .attr('y', legendY + 8)
+        .attr('width', 80)
+        .attr('height', 12)
+        .attr('fill', 'url(#treemapGradient)')
+
+    // Add gradient definition
+    const defs = svg.append('defs')
+    const gradient = defs
+        .append('linearGradient')
+        .attr('id', 'treemapGradient')
+        .attr('x1', '0%')
+        .attr('x2', '100%')
+
+    gradient
+        .append('stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#191414')
+
+    gradient
+        .append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#1DB954')
+
+    // Legend labels for colors
+    svg.append('text')
+        .attr('x', legendX + 220)
+        .attr('y', legendY + 28)
+        .style('font-size', '9px')
+        .style('fill', '#b3b3b3')
+        .text('Low')
+
+    svg.append('text')
+        .attr('x', legendX + 300)
+        .attr('y', legendY + 28)
+        .attr('text-anchor', 'end')
+        .style('font-size', '9px')
+        .style('fill', '#b3b3b3')
+        .text('High')
+
+    // Second row: Size legend
+    svg.append('text')
+        .attr('x', legendX + 10)
+        .attr('y', legendY + 55)
+        .style('font-size', '10px')
+        .style('font-weight', 'bold')
+        .style('fill', '#1DB954')
+        .text('Size: Number of Tracks')
 }
 
 const debouncedResize = debounce(onResize, 200)
@@ -241,13 +308,13 @@ watch([data, size], () => {
   <div
     ref="container"
     class="treemap-container"
-    style="width: 100%; height: 100%; overflow: hidden; background: #fafafa"
+    style="width: 100%; height: 100%; overflow: hidden; background: #191414"
   >
     <svg
       id="treemap-svg"
       :width="size.width"
       :height="size.height"
-      style="background: white; border-bottom: 1px solid #e0e0e0"
+      style="background: #191414; border-bottom: 1px solid #282828"
     />
   </div>
 </template>

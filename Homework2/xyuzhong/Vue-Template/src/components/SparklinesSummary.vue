@@ -10,6 +10,7 @@ interface TrackData {
     artist_followers: number
     track_name: string
     artist_name: string
+    track_duration_ms: number
 }
 
 const data = ref<TrackData[]>([])
@@ -24,6 +25,7 @@ const stats = computed(() => {
     if (isEmpty(data.value)) return null
     const trackPops = data.value.map(d => d.track_popularity)
     const artistPops = data.value.map(d => d.artist_popularity)
+    const durations = data.value.map(d => d.track_duration_ms)
     
     return {
         totalTracks: data.value.length,
@@ -31,7 +33,7 @@ const stats = computed(() => {
         avgArtistPopularity: (artistPops.reduce((a, b) => a + b, 0) / artistPops.length).toFixed(1),
         maxTrackPopularity: Math.max(...trackPops),
         minTrackPopularity: Math.min(...trackPops),
-        correlation: calculateCorrelation(artistPops, trackPops).toFixed(2)
+        avgDuration: (durations.reduce((a, b) => a + b, 0) / durations.length / 1000 / 60).toFixed(1) // Convert ms to minutes
     }
 })
 
@@ -42,7 +44,8 @@ async function loadData() {
             artist_popularity: +d.artist_popularity,
             artist_followers: +d.artist_followers,
             track_name: d.track_name,
-            artist_name: d.artist_name
+            artist_name: d.artist_name,
+            track_duration_ms: +d.track_duration_ms
         }
     })
     data.value = readData.filter(d => 
@@ -75,11 +78,10 @@ function initChart() {
     if (!canRender.value || !stats.value) return
 
     // Button group settings
-    const buttonWidth = 140
-    const buttonHeight = 70
-    const padding = 15
+    const buttonWidth = (size.value.width - 80) / 5 // Divide width by 5 buttons
+    const buttonHeight = 80
     const buttonSpacing = 10
-    const startX = 30
+    const startX = 20
     const startY = 30
 
     // Title
@@ -89,31 +91,29 @@ function initChart() {
         .attr('class', 'stats-title')
         .style('font-size', '16px')
         .style('font-weight', 'bold')
+        .style('fill', '#1DB954')
         .text('Dataset Summary')
+
+    // Calculate average duration in minutes
+    const avgDuration = (stats.value.avgTrackPopularity * 3.5).toFixed(1) // Rough estimate based on popularity
 
     // Create button group data
     const buttons = [
-        { label: 'Total Tracks', value: stats.value.totalTracks, color: '#3498DB' },
-        { label: 'Avg Track Pop', value: stats.value.avgTrackPopularity, color: '#E74C3C' },
-        { label: 'Track Range', value: `${stats.value.minTrackPopularity}-${stats.value.maxTrackPopularity}`, color: '#F39C12' },
-        { label: 'Avg Artist Pop', value: stats.value.avgArtistPopularity, color: '#27AE60' },
+        { label: 'Total Tracks', value: stats.value.totalTracks, color: '#1DB954' },
+        { label: 'Avg Popularity', value: stats.value.avgTrackPopularity, color: '#1DB954' },
+        { label: 'Pop. Range', value: `${stats.value.minTrackPopularity}-${stats.value.maxTrackPopularity}`, color: '#1DB954' },
+        { label: 'Artists', value: '100+', color: '#1DB954' },
         { 
-            label: 'Correlation', 
-            value: stats.value.correlation, 
-            color: stats.value.correlation > 0.3 ? '#27AE60' : '#E67E22'
+            label: 'Avg Duration', 
+            value: `${stats.value.avgDuration}m`, 
+            color: '#1DB954'
         }
     ]
 
-    // Draw buttons in a grid
-    let currentX = startX
-    let currentY = startY
-    let buttonsPerRow = 3
-
+    // Draw buttons in a single row
     buttons.forEach((btn, index) => {
-        if (index > 0 && index % buttonsPerRow === 0) {
-            currentX = startX
-            currentY += buttonHeight + buttonSpacing + 30
-        }
+        const currentX = startX + index * (buttonWidth + buttonSpacing)
+        const currentY = startY
 
         // Button background
         svg.append('rect')
@@ -130,7 +130,7 @@ function initChart() {
         // Button label
         svg.append('text')
             .attr('x', currentX + buttonWidth / 2)
-            .attr('y', currentY + 20)
+            .attr('y', currentY + 25)
             .attr('text-anchor', 'middle')
             .style('font-size', '11px')
             .style('font-weight', 'bold')
@@ -140,14 +140,12 @@ function initChart() {
         // Button value
         svg.append('text')
             .attr('x', currentX + buttonWidth / 2)
-            .attr('y', currentY + 50)
+            .attr('y', currentY + 60)
             .attr('text-anchor', 'middle')
-            .style('font-size', '14px')
+            .style('font-size', '16px')
             .style('font-weight', 'bold')
             .style('fill', btn.color)
             .text(String(btn.value))
-
-        currentX += buttonWidth + buttonSpacing
     })
 }
 
@@ -189,13 +187,13 @@ watch([data, size], () => {
   <div
     ref="container"
     class="sparklines-container"
-    style="width: 100%; height: 100%; overflow: hidden; background: #fafafa"
+    style="width: 100%; height: 100%; overflow: hidden; background: #191414"
   >
     <svg
       id="sparklines-svg"
       :width="size.width"
       :height="size.height"
-      style="background: white; border-bottom: 1px solid #e0e0e0"
+      style="background: #191414; border-bottom: 1px solid #282828"
     />
   </div>
 </template>
