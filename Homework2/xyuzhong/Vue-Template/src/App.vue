@@ -13,7 +13,7 @@ import ParallelCoordinatesPlot from './components/ParallelCoordinatesPlot.vue'
   <VContainer id="main-container" class="d-flex flex-column" fluid style="background: #121212; min-height: 100vh; padding: 0; overflow-y: auto;">
     <!-- Header -->
     <VRow class="pa-0" style="background: #191414; padding: 24px 40px; border-bottom: 2px solid #1DB954; flex-shrink: 0;">
-      <VCol class="pa-0" style="padding-left: 20px;">
+      <VCol class="pa-0" style="padding-left: 60px;">
         <h1 style="color: #1DB954; font-size: 32px; font-weight: bold; margin: 0; letter-spacing: 1px;">
           🎵 SPOTIFY TRACKS ANALYTICS
         </h1>
