@@ -1,0 +1,46 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #f8f9fa;
+}
+
+#app{
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+}
+
+/* Visualization styles */
+svg {
+  background-color: white;
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+}
+
+svg text {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+}
+
+svg .domain {
+  stroke: #999;
+  stroke-width: 1;
+}
+
+svg .tick line {
+  stroke: #ddd;
+  stroke-width: 0.5;
+}
+
+svg .tick text {
+  fill: #666;
+  font-size: 11px;
+}
