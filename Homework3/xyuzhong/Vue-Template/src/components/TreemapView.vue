@@ -29,6 +29,28 @@ const margin: Margin = { left: 0, right: 0, top: 30, bottom: 0 }
 const container = ref<HTMLElement | null>(null)
 const canRender = computed(() => !isEmpty(data.value) && size.value.width > 0 && size.value.height > 0)
 
+const stats = computed(() => {
+    if (isEmpty(data.value)) return null
+    const grouped = groupBy(data.value, 'artist_name')
+    let children: TreeNode[] = Object.entries(grouped).map(([artist, tracks]) => ({
+        name: artist,
+        value: tracks.length,
+        popularity: (tracks.reduce((sum: number, t: any) => sum + t.track_popularity, 0) / tracks.length)
+    }))
+    children = children
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 40)
+    
+    const avgPopularity = (children.reduce((sum, n) => sum + n.popularity, 0) / children.length).toFixed(1)
+    const totalTracks = children.reduce((sum, n) => sum + n.value, 0)
+    return {
+        artistCount: Object.keys(grouped).length,
+        topArtistCount: children.length,
+        totalTracks: totalTracks,
+        avgPopularity: avgPopularity
+    }
+})
+
 async function loadData() {
     const readData = await d3.csv('../../data/track_data_final.csv', (d: any) => {
         return {
@@ -85,7 +107,7 @@ function initChart() {
         .style('font-size', '14px')
         .style('font-weight', 'bold')
         .style('fill', '#1DB954')
-        .text('Artist Tracks numbers & popularity')
+        .text(`Artist Tracks numbers & popularity (Top 40: ${stats.value?.topArtistCount || 0} artists, ${stats.value?.totalTracks || 0} total tracks, Avg: ${stats.value?.avgPopularity || 0})`)
 
     const chartWidth = size.value.width
     const chartHeight = size.value.height - margin.top

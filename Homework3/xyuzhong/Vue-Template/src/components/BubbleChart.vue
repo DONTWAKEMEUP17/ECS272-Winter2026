@@ -20,6 +20,17 @@ const margin: Margin = { left: 70, right: 30, top: 40, bottom: 70 }
 const container = ref<HTMLElement | null>(null)
 const canRender = computed(() => !isEmpty(data.value) && size.value.width > 0 && size.value.height > 0)
 
+const stats = computed(() => {
+    if (isEmpty(data.value)) return null
+    const explicitCount = data.value.filter(d => d.explicit).length
+    const cleanCount = data.value.length - explicitCount
+    return {
+        totalTracks: data.value.length,
+        explicitCount: explicitCount,
+        cleanCount: cleanCount
+    }
+})
+
 async function loadData() {
     const rawData = await d3.csv('../../data/track_data_final.csv', (d: any) => {
         return {
@@ -67,6 +78,17 @@ function initChart() {
         .domain([rExtent[0], rExtent[1]])
         .range([2, 15])
 
+    // Add title
+    chartContainer
+        .append('text')
+        .attr('x', size.value.width / 2)
+        .attr('y', margin.top - 5)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '14px')
+        .style('font-weight', 'bold')
+        .style('fill', '#1DB954')
+        .text(`Track Duration vs Popularity (${stats.value?.totalTracks || 0} tracks: ${stats.value?.cleanCount || 0} clean, ${stats.value?.explicitCount || 0} explicit)`)
+
     // X axis
     chartContainer
         .append('g')
@@ -93,17 +115,6 @@ function initChart() {
         .style('font-weight', 'bold')
         .style('fill', '#333')
         .text('Track Popularity')
-
-    // Title
-    chartContainer
-        .append('text')
-        .attr('x', size.value.width / 2)
-        .attr('y', margin.top - 10)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '14px')
-        .style('font-weight', 'bold')
-        .style('fill', '#1DB954')
-        .text('Track Duration vs Popularity (Bubble Size = Artist Followers)')
 
     // Bubbles
     chartContainer

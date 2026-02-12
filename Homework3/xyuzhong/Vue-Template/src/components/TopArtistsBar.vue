@@ -17,6 +17,14 @@ const margin: Margin = { left: 80, right: 30, top: 40, bottom: 150 }
 const container = ref<HTMLElement | null>(null)
 const canRender = computed(() => !isEmpty(data.value) && size.value.width > 0 && size.value.height > 0)
 
+const stats = computed(() => {
+    if (isEmpty(data.value)) return null
+    return {
+        genreCount: data.value.length,
+        avgPopularity: (data.value.reduce((sum, d) => sum + d.avg_popularity, 0) / data.value.length).toFixed(1)
+    }
+})
+
 async function loadData() {
     const rawData = await d3.csv('../../data/track_data_final.csv', (d: any) => {
         return {
@@ -103,7 +111,7 @@ function initChart() {
         .style('font-size', '14px')
         .style('font-weight', 'bold')
         .style('fill', '#1DB954')
-        .text('Genre Distribution (Top 25)')
+        .text(`Genre Distribution (Top ${stats.value?.genreCount || 0}, Avg popularity: ${stats.value?.avgPopularity || 0})`)
 
     // Add X axis
     chartContainer

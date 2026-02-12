@@ -26,6 +26,14 @@ const margin: Margin = { left: 80, right: 80, top: 50, bottom: 60 }
 const container = ref<HTMLElement | null>(null)
 const canRender = computed(() => !isEmpty(data.value) && size.value.width > 0 && size.value.height > 0)
 
+const stats = computed(() => {
+    if (isEmpty(data.value)) return null
+    return {
+        totalTracks: data.value.length,
+        avgPopularity: (data.value.reduce((sum, d) => sum + d.track_popularity, 0) / data.value.length).toFixed(1)
+    }
+})
+
 async function loadData() {
     const rawData = await d3.csv('../../data/track_data_final.csv', (d: any) => {
         return {

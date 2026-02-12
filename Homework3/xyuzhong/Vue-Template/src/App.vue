@@ -2,7 +2,6 @@
 import TreemapView from './components/TreemapView.vue'
 import TopArtistsBar from './components/TopArtistsBar.vue'
 import BubbleChart from './components/BubbleChart.vue'
-import SparklinesSummary from './components/SparklinesSummary.vue'
 import ParallelCoordinatesPlot from './components/ParallelCoordinatesPlot.vue'
 
 // Local components are available in the template automatically with `script setup`.
@@ -23,14 +22,7 @@ import ParallelCoordinatesPlot from './components/ParallelCoordinatesPlot.vue'
       </VCol>
     </VRow>
 
-    <!-- Visualization 1: Dataset Summary -->
-    <VRow class="pa-4" style="height: 250px; background: #121212; flex-shrink: 0;">
-      <VCol class="pa-0" style="border: 1px solid #282828; border-radius: 8px; overflow: hidden;">
-        <SparklinesSummary />
-      </VCol>
-    </VRow>
-
-    <!-- Visualization 2: Treemap -->
+    <!-- Visualization 1: Treemap -->
     <VRow class="pa-4" style="height: 400px; background: #121212; flex-shrink: 0;">
       <VCol class="pa-0" style="border: 1px solid #282828; border-radius: 8px; overflow: hidden;">
         <TreemapView />
