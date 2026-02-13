@@ -22,6 +22,11 @@ interface TreeHierarchy extends d3.HierarchyRectangularNode<TreeNode> {
     children?: TreeHierarchy[]
 }
 
+// Props
+const props = defineProps<{
+    onArtistSelect?: (artistName: string) => void
+}>()
+
 const data = ref<TrackData[]>([])
 const size = ref<ComponentSize>({ width: 0, height: 0 })
 const margin: Margin = { left: 0, right: 0, top: 30, bottom: 0 }
@@ -130,10 +135,10 @@ function initChart() {
 
     const treemapRoot = treemap(root) as TreeHierarchy
 
-    // Color scale based on popularity
+    // Color scale based on popularity (Spotify green gradient)
     const colorScale = d3.scaleLinear<string>()
         .domain([0, 100])
-        .range(['#E8F4F8', '#0066CC']) // Light blue to deep blue
+        .range(['#191414', '#1DB954']) // Black to Spotify green
 
     // Create cells
     const cells = svg.selectAll('g')
@@ -150,6 +155,62 @@ function initChart() {
         .attr('stroke', '#fff')
         .attr('stroke-width', 2)
         .style('opacity', 0.85)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            // Highlight current cell
+            d3.select(this)
+                .style('opacity', 1)
+                .attr('stroke-width', 3)
+
+            // Dim other cells
+            cells.selectAll('rect')
+                .style('opacity', (cell: any) => cell === d ? 1 : 0.2)
+
+            // Show tooltip
+            const tooltip = d3.select('body').append('div')
+                .attr('class', 'treemap-tooltip')
+                .style('position', 'absolute')
+                .style('background-color', '#f5f5f5')
+                .style('border', '2px solid #1DB954')
+                .style('border-radius', '6px')
+                .style('padding', '12px')
+                .style('font-size', '12px')
+                .style('box-shadow', '0 2px 8px rgba(0,0,0,0.15)')
+                .style('z-index', '10000')
+                .style('pointer-events', 'none')
+                .style('max-width', '250px')
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 10) + 'px')
+                .html(`
+                    <div style="font-weight: bold; color: #1DB954; margin-bottom: 8px;">${d.data.name}</div>
+                    <div style="color: #333;">
+                        <div>📊 Tracks: ${d.data.value}</div>
+                        <div>⭐ Avg Popularity: ${d.data.popularity.toFixed(1)}</div>
+                    </div>
+                `)
+        })
+        .on('mouseout', function() {
+            // Restore opacity
+            d3.select(this)
+                .style('opacity', 0.85)
+                .attr('stroke-width', 2)
+
+            cells.selectAll('rect')
+                .style('opacity', 0.85)
+
+            // Remove tooltip
+            d3.selectAll('.treemap-tooltip').remove()
+        })
+        .on('mousemove', function(event) {
+            d3.selectAll('.treemap-tooltip')
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 10) + 'px')
+        })
+        .on('click', function(event, d: TreeHierarchy) {
+            if (props.onArtistSelect) {
+                props.onArtistSelect(d.data.name)
+            }
+        })
 
     // Add text labels (only if rectangle is large enough)
     cells.append('text')
@@ -227,7 +288,7 @@ function initChart() {
         .attr('height', legendHeight)
         .attr('fill', '#f5f5f5')
         .attr('opacity', 0.95)
-        .attr('stroke', '#0066CC')
+        .attr('stroke', '#1DB954')
         .attr('stroke-width', 1)
 
     // First row: Color legend
@@ -236,7 +297,7 @@ function initChart() {
         .attr('y', legendY + 15)
         .style('font-size', '10px')
         .style('font-weight', 'bold')
-        .style('fill', '#0066CC')
+        .style('fill', '#1DB954')
         .text('Color: Artist Avg Popularity')
 
     // Legend color bar
@@ -258,12 +319,12 @@ function initChart() {
     gradient
         .append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', '#E8F4F8')
+        .attr('stop-color', '#191414')
 
     gradient
         .append('stop')
         .attr('offset', '100%')
-        .attr('stop-color', '#0066CC')
+        .attr('stop-color', '#1DB954')
 
     // Legend labels for colors with values
     svg.append('text')
@@ -287,7 +348,7 @@ function initChart() {
         .attr('y', legendY + 55)
         .style('font-size', '10px')
         .style('font-weight', 'bold')
-        .style('fill', '#0066CC')
+        .style('fill', '#1DB954')
         .text('Size: Number of Tracks')
 }
 

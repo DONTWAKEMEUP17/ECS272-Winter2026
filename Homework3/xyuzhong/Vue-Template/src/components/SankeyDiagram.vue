@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import * as d3 from 'd3'
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey'
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount, toRef } from 'vue'
 import { isEmpty, debounce } from 'lodash'
 import { ComponentSize, Margin } from '../types'
 
 interface TrackData {
     track_popularity: number
     artist_popularity: number
+    artist_name: string
 }
 
 interface SankeyNode {
@@ -25,6 +26,13 @@ interface SankeyData {
     nodes: SankeyNode[]
     links: SankeyLink[]
 }
+
+// Props
+const props = defineProps<{
+    selectedArtist?: string | null
+}>()
+
+const selectedArtist = toRef(props, 'selectedArtist')
 
 const data = ref<TrackData[]>([])
 const size = ref<ComponentSize>({ width: 0, height: 0 })
@@ -45,7 +53,8 @@ async function loadData() {
     const rawData = await d3.csv('../../data/track_data_final.csv', (d: any) => {
         return {
             track_popularity: +d.track_popularity,
-            artist_popularity: +d.artist_popularity
+            artist_popularity: +d.artist_popularity,
+            artist_name: d.artist_name
         }
     })
 
@@ -70,10 +79,15 @@ function prepareSankeyData(): SankeyData {
         { name: 'Track: High', category: 'track' }
     ]
 
+    // Filter data based on selected artist
+    const filteredData = selectedArtist.value 
+        ? data.value.filter(d => d.artist_name === selectedArtist.value)
+        : data.value
+
     // Count flows
     const linkMap = new Map<string, number>()
     
-    data.value.forEach(d => {
+    filteredData.forEach(d => {
         const artistLevel = getPopularityLevel(d.artist_popularity)
         const trackLevel = getPopularityLevel(d.track_popularity)
         const key = `${artistLevel}→${trackLevel}`
@@ -157,18 +171,82 @@ function initChart() {
         .data(graph.links)
         .join('path')
         .attr('d', sankeyLinkHorizontal() as any)
+        .attr('class', 'sankey-link')
         .attr('stroke', d => {
             const sourceName = sankeyData.nodes[(d.source as any).index].name
             return sourceName.includes('Artist') ? artistColors[sourceName] : trackColors[sourceName]
         })
         .attr('stroke-opacity', 0.4)
         .attr('stroke-width', d => Math.max(1, d.width))
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            // Highlight this link
+            d3.select(this)
+                .attr('stroke-opacity', 0.8)
+                .attr('stroke-width', Math.max(3, d.width + 2))
+
+            // Dim other links
+            g.selectAll('.sankey-link')
+                .attr('stroke-opacity', (link: any) => link === d ? 0.8 : 0.1)
+
+            // Highlight connected nodes
+            g.selectAll('.sankey-node')
+                .attr('fill-opacity', (node: any) => {
+                    return node.index === (d.source as any).index || node.index === (d.target as any).index ? 1 : 0.3
+                })
+
+            // Show tooltip
+            const tooltip = d3.select('body').append('div')
+                .attr('class', 'sankey-tooltip')
+                .style('position', 'absolute')
+                .style('background-color', '#f5f5f5')
+                .style('border', '2px solid #1DB954')
+                .style('border-radius', '6px')
+                .style('padding', '12px')
+                .style('font-size', '12px')
+                .style('box-shadow', '0 2px 8px rgba(0,0,0,0.15)')
+                .style('z-index', '10000')
+                .style('pointer-events', 'none')
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 10) + 'px')
+                .html(`
+                    <div style="font-weight: bold; color: #1DB954; margin-bottom: 8px;">
+                        ${sankeyData.nodes[(d.source as any).index].name} → ${sankeyData.nodes[(d.target as any).index].name}
+                    </div>
+                    <div style="color: #333;">
+                        <div>🎵 ${d.value} tracks</div>
+                    </div>
+                `)
+        })
+        .on('mouseout', function() {
+            // Restore link
+            d3.select(this)
+                .attr('stroke-opacity', 0.4)
+                .attr('stroke-width', d => Math.max(1, d.width))
+
+            // Restore all links
+            g.selectAll('.sankey-link')
+                .attr('stroke-opacity', 0.4)
+
+            // Restore all nodes
+            g.selectAll('.sankey-node')
+                .attr('fill-opacity', 1)
+
+            // Remove tooltip
+            d3.selectAll('.sankey-tooltip').remove()
+        })
+        .on('mousemove', function(event) {
+            d3.selectAll('.sankey-tooltip')
+                .style('left', (event.pageX + 10) + 'px')
+                .style('top', (event.pageY - 10) + 'px')
+        })
 
     // Draw nodes
     g.append('g')
         .selectAll('rect')
         .data(graph.nodes)
         .join('rect')
+        .attr('class', 'sankey-node')
         .attr('x', d => d.x0)
         .attr('y', d => d.y0)
         .attr('height', d => d.y1 - d.y0)
@@ -179,6 +257,37 @@ function initChart() {
         })
         .attr('stroke', '#fff')
         .attr('stroke-width', 2)
+        .style('cursor', 'pointer')
+        .on('mouseover', function(event, d) {
+            // Highlight this node
+            d3.select(this)
+                .attr('stroke-width', 3)
+                .attr('stroke', '#1DB954')
+
+            // Highlight connected links
+            g.selectAll('.sankey-link')
+                .attr('stroke-opacity', (link: any) => {
+                    return link.source.index === d.index || link.target.index === d.index ? 0.8 : 0.1
+                })
+
+            // Dim other nodes
+            g.selectAll('.sankey-node')
+                .attr('fill-opacity', (node: any) => node === d ? 1 : 0.3)
+        })
+        .on('mouseout', function() {
+            // Restore node
+            d3.select(this)
+                .attr('stroke-width', 2)
+                .attr('stroke', '#fff')
+
+            // Restore links
+            g.selectAll('.sankey-link')
+                .attr('stroke-opacity', 0.4)
+
+            // Restore all nodes
+            g.selectAll('.sankey-node')
+                .attr('fill-opacity', 1)
+        })
 
     // Node labels
     g.append('g')
@@ -215,7 +324,7 @@ function initChart() {
         .attr('y', margin.top + legendY)
         .style('font-size', '11px')
         .style('fill', '#666')
-        .text('Flow size represents number of tracks | Left: Artist Popularity | Right: Track Popularity')
+        .text('Flow size represents number of tracks | Colors show popularity levels (Low → High)')
 }
 
 const debouncedResize = debounce(onResize, 200)
@@ -244,7 +353,7 @@ onBeforeUnmount(() => {
     observer.disconnect()
 })
 
-watch([data, size], () => {
+watch([data, size, selectedArtist], () => {
     if (canRender.value) {
         initChart()
     }

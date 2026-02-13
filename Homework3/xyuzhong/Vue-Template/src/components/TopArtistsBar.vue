@@ -100,7 +100,7 @@ function initChart() {
     const colorScale = d3
         .scaleLinear<string>()
         .domain([0, 100])
-        .range(['#FFE4CC', '#FF8C00']) // Light orange to deep orange
+        .range(['#282828', '#1DB954']) // Dark gray to Spotify green
 
     // Add title
     chartContainer
@@ -173,6 +173,10 @@ function initChart() {
         .on('mouseover', function(event, d) {
             d3.select(this).attr('opacity', 1)
             
+            // Dim other bars
+            chartContainer.selectAll('.bar')
+                .attr('opacity', (bar: any) => bar === d ? 1 : 0.2)
+            
             chartContainer
                 .append('text')
                 .attr('class', 'tooltip')
@@ -196,6 +200,7 @@ function initChart() {
         })
         .on('mouseout', function() {
             d3.select(this).attr('opacity', 0.8)
+            chartContainer.selectAll('.bar').attr('opacity', 0.8)
             chartContainer.selectAll('.tooltip').remove()
         })
 
@@ -213,7 +218,7 @@ function initChart() {
         .attr('height', legendHeight)
         .attr('fill', '#f5f5f5')
         .attr('opacity', 0.95)
-        .attr('stroke', '#FF8C00')
+        .attr('stroke', '#1DB954')
         .attr('stroke-width', 1)
 
     // Legend title
@@ -224,7 +229,7 @@ function initChart() {
         .attr('text-anchor', 'middle')
         .style('font-size', '11px')
         .style('font-weight', 'bold')
-        .style('fill', '#FF8C00')
+        .style('fill', '#1DB954')
         .text('Avg Popularity')
 
     // Legend gradient scale (0-100)
@@ -251,12 +256,12 @@ function initChart() {
     gradient
         .append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', '#FFE4CC')
+        .attr('stop-color', '#282828')
 
     gradient
         .append('stop')
         .attr('offset', '100%')
-        .attr('stop-color', '#FF8C00')
+        .attr('stop-color', '#1DB954')
 
     // Legend labels (0-100 scale)
     chartContainer
