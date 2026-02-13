@@ -157,13 +157,17 @@ function initChart() {
         .style('opacity', 0.85)
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
-            // Highlight current cell
+            // Highlight current cell with smooth transition
             d3.select(this)
+                .transition()
+                .duration(200)
                 .style('opacity', 1)
                 .attr('stroke-width', 3)
 
-            // Dim other cells
+            // Dim other cells with smooth transition
             cells.selectAll('rect')
+                .transition()
+                .duration(200)
                 .style('opacity', (cell: any) => cell === d ? 1 : 0.2)
 
             // Show tooltip
@@ -190,12 +194,16 @@ function initChart() {
                 `)
         })
         .on('mouseout', function() {
-            // Restore opacity
+            // Restore opacity with smooth transition
             d3.select(this)
+                .transition()
+                .duration(200)
                 .style('opacity', 0.85)
                 .attr('stroke-width', 2)
 
             cells.selectAll('rect')
+                .transition()
+                .duration(200)
                 .style('opacity', 0.85)
 
             // Remove tooltip

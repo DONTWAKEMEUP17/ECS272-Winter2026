@@ -169,15 +169,31 @@ function initChart() {
         .attr('fill', 'none')
         .selectAll('path')
         .data(graph.links)
-        .join('path')
-        .attr('d', sankeyLinkHorizontal() as any)
-        .attr('class', 'sankey-link')
-        .attr('stroke', d => {
-            const sourceName = sankeyData.nodes[(d.source as any).index].name
-            return sourceName.includes('Artist') ? artistColors[sourceName] : trackColors[sourceName]
-        })
-        .attr('stroke-opacity', 0.4)
-        .attr('stroke-width', d => Math.max(1, d.width))
+        .join(
+            enter => enter.append('path')
+                .attr('d', sankeyLinkHorizontal() as any)
+                .attr('class', 'sankey-link')
+                .attr('stroke', d => {
+                    const sourceName = sankeyData.nodes[(d.source as any).index].name
+                    return sourceName.includes('Artist') ? artistColors[sourceName] : trackColors[sourceName]
+                })
+                .attr('stroke-opacity', 0)
+                .attr('stroke-width', d => Math.max(1, d.width))
+                .transition()
+                .duration(600)
+                .attr('stroke-opacity', 0.4),
+            update => update
+                .transition()
+                .duration(600)
+                .attr('d', sankeyLinkHorizontal() as any)
+                .attr('stroke-width', d => Math.max(1, d.width))
+                .attr('stroke-opacity', 0.4),
+            exit => exit
+                .transition()
+                .duration(600)
+                .attr('stroke-opacity', 0)
+                .remove()
+        )
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             // Highlight this link
@@ -245,18 +261,37 @@ function initChart() {
     g.append('g')
         .selectAll('rect')
         .data(graph.nodes)
-        .join('rect')
-        .attr('class', 'sankey-node')
-        .attr('x', d => d.x0)
-        .attr('y', d => d.y0)
-        .attr('height', d => d.y1 - d.y0)
-        .attr('width', d => d.x1 - d.x0)
-        .attr('fill', d => {
-            const name = d.name
-            return name.includes('Artist') ? artistColors[name] : trackColors[name]
-        })
-        .attr('stroke', '#fff')
-        .attr('stroke-width', 2)
+        .join(
+            enter => enter.append('rect')
+                .attr('class', 'sankey-node')
+                .attr('x', d => d.x0)
+                .attr('y', d => d.y0)
+                .attr('height', d => d.y1 - d.y0)
+                .attr('width', d => d.x1 - d.x0)
+                .attr('fill', d => {
+                    const name = d.name
+                    return name.includes('Artist') ? artistColors[name] : trackColors[name]
+                })
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2)
+                .attr('fill-opacity', 0)
+                .transition()
+                .duration(600)
+                .attr('fill-opacity', 1),
+            update => update
+                .transition()
+                .duration(600)
+                .attr('x', d => d.x0)
+                .attr('y', d => d.y0)
+                .attr('height', d => d.y1 - d.y0)
+                .attr('width', d => d.x1 - d.x0)
+                .attr('fill-opacity', 1),
+            exit => exit
+                .transition()
+                .duration(600)
+                .attr('fill-opacity', 0)
+                .remove()
+        )
         .style('cursor', 'pointer')
         .on('mouseover', function(event, d) {
             // Highlight this node
