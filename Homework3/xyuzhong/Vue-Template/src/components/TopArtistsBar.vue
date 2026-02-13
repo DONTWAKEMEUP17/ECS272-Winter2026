@@ -100,7 +100,7 @@ function initChart() {
     const colorScale = d3
         .scaleLinear<string>()
         .domain([0, 100])
-        .range(['#282828', '#1DB954']) // Dark gray to Spotify green
+        .range(['#FFE4CC', '#FF8C00']) // Light orange to deep orange
 
     // Add title
     chartContainer
@@ -110,7 +110,7 @@ function initChart() {
         .attr('text-anchor', 'middle')
         .style('font-size', '14px')
         .style('font-weight', 'bold')
-        .style('fill', '#1DB954')
+        .style('fill', '#333')
         .text(`Genre Distribution (Top ${stats.value?.genreCount || 0}, Avg popularity: ${stats.value?.avgPopularity || 0})`)
 
     // Add X axis
@@ -213,7 +213,7 @@ function initChart() {
         .attr('height', legendHeight)
         .attr('fill', '#f5f5f5')
         .attr('opacity', 0.95)
-        .attr('stroke', '#1DB954')
+        .attr('stroke', '#FF8C00')
         .attr('stroke-width', 1)
 
     // Legend title
@@ -224,7 +224,7 @@ function initChart() {
         .attr('text-anchor', 'middle')
         .style('font-size', '11px')
         .style('font-weight', 'bold')
-        .style('fill', '#1DB954')
+        .style('fill', '#FF8C00')
         .text('Avg Popularity')
 
     // Legend gradient scale (0-100)
@@ -251,12 +251,12 @@ function initChart() {
     gradient
         .append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', '#282828')
+        .attr('stop-color', '#FFE4CC')
 
     gradient
         .append('stop')
         .attr('offset', '100%')
-        .attr('stop-color', '#1DB954')
+        .attr('stop-color', '#FF8C00')
 
     // Legend labels (0-100 scale)
     chartContainer

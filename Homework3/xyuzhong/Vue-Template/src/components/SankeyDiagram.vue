@@ -119,7 +119,7 @@ function initChart() {
         .attr('text-anchor', 'middle')
         .style('font-size', '14px')
         .style('font-weight', 'bold')
-        .style('fill', '#1DB954')
+        .style('fill', '#333')
         .text(`Artist vs Track Popularity Flow (${stats.value?.totalTracks || 0} tracks, Avg: ${stats.value?.avgPopularity || 0})`)
 
     const sankeyData = prepareSankeyData()
@@ -215,7 +215,7 @@ function initChart() {
         .attr('y', margin.top + legendY)
         .style('font-size', '11px')
         .style('fill', '#666')
-        .text('Flow size represents number of tracks | Colors show popularity levels (Low → High)')
+        .text('Flow size represents number of tracks | Left: Artist Popularity | Right: Track Popularity')
 }
 
 const debouncedResize = debounce(onResize, 200)

@@ -106,7 +106,7 @@ function initChart() {
         .attr('y', 20)
         .style('font-size', '14px')
         .style('font-weight', 'bold')
-        .style('fill', '#1DB954')
+        .style('fill', '#333')
         .text(`Artist Tracks numbers & popularity (Top 40: ${stats.value?.topArtistCount || 0} artists, ${stats.value?.totalTracks || 0} total tracks, Avg: ${stats.value?.avgPopularity || 0})`)
 
     const chartWidth = size.value.width
@@ -130,10 +130,10 @@ function initChart() {
 
     const treemapRoot = treemap(root) as TreeHierarchy
 
-    // Color scale based on popularity (Spotify green gradient)
+    // Color scale based on popularity
     const colorScale = d3.scaleLinear<string>()
         .domain([0, 100])
-        .range(['#191414', '#1DB954']) // Black to Spotify green
+        .range(['#E8F4F8', '#0066CC']) // Light blue to deep blue
 
     // Create cells
     const cells = svg.selectAll('g')
@@ -227,7 +227,7 @@ function initChart() {
         .attr('height', legendHeight)
         .attr('fill', '#f5f5f5')
         .attr('opacity', 0.95)
-        .attr('stroke', '#1DB954')
+        .attr('stroke', '#0066CC')
         .attr('stroke-width', 1)
 
     // First row: Color legend
@@ -236,7 +236,7 @@ function initChart() {
         .attr('y', legendY + 15)
         .style('font-size', '10px')
         .style('font-weight', 'bold')
-        .style('fill', '#1DB954')
+        .style('fill', '#0066CC')
         .text('Color: Artist Avg Popularity')
 
     // Legend color bar
@@ -258,12 +258,12 @@ function initChart() {
     gradient
         .append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', '#191414')
+        .attr('stop-color', '#E8F4F8')
 
     gradient
         .append('stop')
         .attr('offset', '100%')
-        .attr('stop-color', '#1DB954')
+        .attr('stop-color', '#0066CC')
 
     // Legend labels for colors with values
     svg.append('text')
@@ -287,7 +287,7 @@ function initChart() {
         .attr('y', legendY + 55)
         .style('font-size', '10px')
         .style('font-weight', 'bold')
-        .style('fill', '#1DB954')
+        .style('fill', '#0066CC')
         .text('Size: Number of Tracks')
 }
 

@@ -10,7 +10,7 @@ import SankeyDiagram from './components/SankeyDiagram.vue'
 <template>
   <VContainer id="main-container" class="d-flex flex-column" fluid style="background: #ffffff; min-height: 100vh; padding: 0; overflow-y: auto;">
     <!-- Header -->
-    <VRow class="pa-0" style="background: #f5f5f5; padding: 24px 40px; border-bottom: 2px solid #1DB954; flex-shrink: 0;">
+    <VRow class="pa-0" style="background: #f5f5f5; padding: 24px 40px; border-bottom: 2px solid #0066CC; flex-shrink: 0;">
       <VCol class="pa-0" style="padding-left: 60px;">
         <h1 style="color: #1DB954; font-size: 32px; font-weight: bold; margin: 0; letter-spacing: 1px;">
           🎵 SPOTIFY TRACKS ANALYTICS
