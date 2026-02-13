@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import TreemapView from './components/TreemapView.vue'
 import TopArtistsBar from './components/TopArtistsBar.vue'
-import BubbleChart from './components/BubbleChart.vue'
 import SankeyDiagram from './components/SankeyDiagram.vue'
 
 // Local components are available in the template automatically with `script setup`.
@@ -22,23 +21,19 @@ import SankeyDiagram from './components/SankeyDiagram.vue'
       </VCol>
     </VRow>
 
-    <!-- Visualizations Grid -->
-    <!-- Row 1: Treemap and Bar Chart -->
-    <VRow class="pa-4" style="height: 400px; background: #ffffff; flex-shrink: 0; gap: 16px;">
-      <VCol class="pa-0" style="flex: 1; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; min-width: 0;">
+    <!-- Row 1: Treemap (Full Width) -->
+    <VRow class="pa-4" style="height: 380px; background: #ffffff; flex-shrink: 0;">
+      <VCol class="pa-0" style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
         <TreemapView />
-      </VCol>
-      <VCol class="pa-0" style="flex: 1; border: 1px solid #282828; border-radius: 8px; overflow: hidden; min-width: 0;">
-        <TopArtistsBar />
       </VCol>
     </VRow>
 
-    <!-- Row 2: Bubble Chart and Sankey Diagram -->
-    <VRow class="pa-4" style="height: 450px; background: #ffffff; flex-shrink: 0; gap: 16px;">
+    <!-- Row 2: Top Artists Bar and Sankey Diagram -->
+    <VRow class="pa-4" style="height: 400px; background: #ffffff; flex-shrink: 0; gap: 16px;">
       <VCol class="pa-0" style="flex: 1; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; min-width: 0;">
-        <BubbleChart />
+        <TopArtistsBar />
       </VCol>
-      <VCol class="pa-0" style="flex: 1; border: 1px solid #282828; border-radius: 8px; overflow: hidden; min-width: 0;">
+      <VCol class="pa-0" style="flex: 1; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; min-width: 0;">
         <SankeyDiagram />
       </VCol>
     </VRow>
