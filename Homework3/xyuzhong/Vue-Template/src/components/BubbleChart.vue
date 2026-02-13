@@ -250,6 +250,6 @@ onBeforeUnmount(() => {
 .chart-container {
     width: 100%;
     height: 100%;
-    background: #191414;
+    background: #ffffff;
 }
 </style>

@@ -225,8 +225,8 @@ function initChart() {
         .attr('y', legendY)
         .attr('width', 320)
         .attr('height', legendHeight)
-        .attr('fill', '#282828')
-        .attr('opacity', 0.85)
+        .attr('fill', '#f5f5f5')
+        .attr('opacity', 0.95)
         .attr('stroke', '#1DB954')
         .attr('stroke-width', 1)
 
@@ -270,7 +270,7 @@ function initChart() {
         .attr('x', legendX + 220)
         .attr('y', legendY + 28)
         .style('font-size', '9px')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
         .text('Low (0)')
 
     svg.append('text')
@@ -278,7 +278,7 @@ function initChart() {
         .attr('y', legendY + 28)
         .attr('text-anchor', 'end')
         .style('font-size', '9px')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
         .text('High (100)')
 
     // Second row: Size legend
@@ -330,13 +330,13 @@ watch([data, size], () => {
   <div
     ref="container"
     class="treemap-container"
-    style="width: 100%; height: 100%; overflow: hidden; background: #191414"
+    style="width: 100%; height: 100%; overflow: hidden; background: #ffffff"
   >
     <svg
       id="treemap-svg"
       :width="size.width"
       :height="size.height"
-      style="background: #191414; border-bottom: 1px solid #282828"
+      style="background: #ffffff; border-bottom: 1px solid #e0e0e0"
     />
   </div>
 </template>

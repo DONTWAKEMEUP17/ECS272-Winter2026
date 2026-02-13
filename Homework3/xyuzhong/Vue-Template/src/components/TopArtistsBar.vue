@@ -124,7 +124,7 @@ function initChart() {
         .attr('dy', '.15em')
         .attr('transform', 'rotate(-45)')
         .style('font-size', '10px')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
 
     // Add Y axis
     chartContainer
@@ -132,14 +132,14 @@ function initChart() {
         .attr('transform', `translate(${margin.left}, 0)`)
         .call(d3.axisLeft(yScale))
         .selectAll('text')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
 
     // Y axis label
     chartContainer
         .append('text')
         .attr('transform', `translate(${margin.left - 50}, ${size.value.height / 2}) rotate(-90)`)
         .style('text-anchor', 'middle')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
         .style('font-size', '12px')
         .text('Number of Tracks')
 
@@ -149,7 +149,7 @@ function initChart() {
         .attr('x', size.value.width / 2)
         .attr('y', size.value.height - 5)
         .attr('text-anchor', 'middle')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
         .style('font-size', '12px')
         .text('Genre')
 
@@ -211,8 +211,8 @@ function initChart() {
         .attr('y', legendY - 10)
         .attr('width', 150)
         .attr('height', legendHeight)
-        .attr('fill', '#282828')
-        .attr('opacity', 0.8)
+        .attr('fill', '#f5f5f5')
+        .attr('opacity', 0.95)
         .attr('stroke', '#1DB954')
         .attr('stroke-width', 1)
 
@@ -264,7 +264,7 @@ function initChart() {
         .attr('x', legendX)
         .attr('y', legendY + 50)
         .style('font-size', '9px')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
         .text('Low (0)')
 
     chartContainer
@@ -273,7 +273,7 @@ function initChart() {
         .attr('y', legendY + 50)
         .attr('text-anchor', 'end')
         .style('font-size', '9px')
-        .style('fill', '#b3b3b3')
+        .style('fill', '#333')
         .text('High (100)')
 }
 
@@ -310,7 +310,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="chart-container d-flex" ref="container" style="background: #191414;">
+    <div class="chart-container d-flex" ref="container" style="background: #ffffff;">
         <svg id="artists-bar-svg" width="100%" height="100%"></svg>
     </div>
 </template>
@@ -319,6 +319,6 @@ onBeforeUnmount(() => {
 .chart-container {
     width: 100%;
     height: 100%;
-    background: #191414;
+    background: #ffffff;
 }
 </style>
