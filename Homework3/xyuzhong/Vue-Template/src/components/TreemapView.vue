@@ -112,7 +112,7 @@ function initChart() {
         .style('font-size', '14px')
         .style('font-weight', 'bold')
         .style('fill', '#333')
-        .text(`Artist Tracks numbers & popularity (Top 40: ${stats.value?.topArtistCount || 0} artists, ${stats.value?.totalTracks || 0} total tracks, Avg: ${stats.value?.avgPopularity || 0})`)
+        .text(`Artist Propularity & Track Numbers`)
 
     const chartWidth = size.value.width
     const chartHeight = size.value.height - margin.top
@@ -138,7 +138,7 @@ function initChart() {
     // Color scale based on popularity (Spotify green gradient)
     const colorScale = d3.scaleLinear<string>()
         .domain([0, 100])
-        .range(['#191414', '#1DB954']) // Black to Spotify green
+        .range(['#282828', '#1DB954']) // Deep gray to Spotify green (low to high)
 
     // Create cells
     const cells = svg.selectAll('g')
@@ -327,7 +327,7 @@ function initChart() {
     gradient
         .append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', '#191414')
+        .attr('stop-color', '#282828')
 
     gradient
         .append('stop')
